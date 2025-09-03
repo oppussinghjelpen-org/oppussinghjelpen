@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'Innovena Nettverk - Oppussing Hjelpen',
@@ -31,10 +32,13 @@ export default function Nettverk() {
               Se Innovena Nettverket
             </a>
           </iframe>
-          
-          {/* JavaScript widget for enhanced functionality */}
-          <script src="https://innovena.no/nettverk/widget.js"></script>
         </div>
+        
+        {/* JavaScript widget for enhanced functionality */}
+        <Script 
+          src="https://innovena.no/nettverk/widget.js"
+          strategy="afterInteractive"
+        />
       </div>
     </div>
   )
