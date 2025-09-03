@@ -40,6 +40,11 @@ export default function Footer() {
                   Kontakt
                 </Link>
               </li>
+              <li>
+                <Link href="/nettverk" className="text-gray-300 hover:text-green-700 transition-colors text-lg">
+                  Nettverk
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -72,7 +77,7 @@ export default function Footer() {
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center">
           <p className="text-gray-400 text-lg mb-2">
-            © 2020-2025 Oppussing Hjelpen. Alle rettigheter forbeholdt.
+            © 2020-{new Date().getFullYear()} Oppussing Hjelpen. Alle rettigheter forbeholdt.
           </p>
           <p className="text-gray-500">
             En del av{' '}

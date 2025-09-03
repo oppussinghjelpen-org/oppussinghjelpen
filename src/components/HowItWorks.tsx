@@ -90,7 +90,7 @@ export default function HowItWorks() {
             </div>
             
             {/* Floating Stats Card */}
-            <div className="absolute -bottom-8 -left-8 bg-white rounded-2xl p-6 shadow-2xl border border-gray-100">
+            <div className="absolute -bottom-8 -left-0 bg-white rounded-2xl p-6 shadow-2xl border border-gray-100">
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-700">98%</div>
                 <div className="text-sm text-gray-800">Fornøyde kunder</div>
@@ -98,7 +98,7 @@ export default function HowItWorks() {
             </div>
             
             {/* Floating Badge */}
-            <div className="absolute -top-6 -right-6 bg-green-500 text-white px-6 py-3 rounded-full text-sm font-semibold shadow-lg">
+            <div className="absolute -top-6 -right-0 bg-green-500 text-white px-6 py-3 rounded-full text-sm font-semibold shadow-lg">
               ✓ Kvalitetssikret
             </div>
           </div>

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const geomanist = localFont({
-  src: "../../fonts/geomanist-book.woff",
-  variable: "--font-geomanist",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -50,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="no">
-      <body className={`${geomanist.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased`}>
         <Navbar />
         <main className="min-h-screen">
           {children}

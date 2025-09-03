@@ -8,7 +8,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geomanist);
+  --font-sans: var(--font-inter);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,7 +21,13 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geomanist), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+/* Enhanced negative letter spacing for headings */
+h1, h2, h3 {
+  letter-spacing: -0.04em;
 }
 
 /* Line clamp utilities */

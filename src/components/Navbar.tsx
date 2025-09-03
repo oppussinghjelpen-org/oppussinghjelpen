@@ -51,7 +51,7 @@ export default function Navbar() {
             {isMounted && (
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-3 bg-gray-200 text-gray-700 hover:bg-gray-300 rounded-full transition-all duration-200"
+                className="p-3 bg-transparent text-gray-700 hover:bg-gray-100 rounded-full transition-all duration-200"
                 aria-label="Åpne mobilmeny"
                 aria-expanded={isMenuOpen}
               >
@@ -67,14 +67,25 @@ export default function Navbar() {
         {isMounted && isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100 shadow-xl rounded-b-2xl">
-              <Link href="/kategorier" className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold">
+              <Link 
+                href="/kategorier" 
+                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Kategorier
               </Link>
-              <Link href="/om-oss" className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold">
+              <Link 
+                href="/om-oss" 
+                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Om oss
               </Link>
-
-              <Link href="/kontakt" className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold">
+              <Link 
+                href="/kontakt" 
+                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Kontakt
               </Link>
             </div>
