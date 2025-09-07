@@ -40,11 +40,6 @@ export default function Footer() {
                   Kontakt
                 </Link>
               </li>
-              <li>
-                <Link href="/nettverk" className="text-gray-300 hover:text-green-700 transition-colors text-lg">
-                  Nettverk
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -90,6 +85,103 @@ export default function Footer() {
               Leadportalen.no
             </a>
           </p>
+        </div>
+
+        {/* Underfooter with partner links */}
+        <div className="border-t border-gray-800 mt-8 pt-6">
+          <div className="text-center mb-4">
+            <p className="text-gray-500 text-sm mb-4">Våre partnersider:</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 text-center">
+            <a 
+              href="https://www.xn--forbrukslnagenten-hrb.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Forbrukslånagenten
+            </a>
+            <a 
+              href="https://velgo.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Velgo
+            </a>
+            <a 
+              href="https://oppussingkristiansand.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Oppussing Kristiansand
+            </a>
+            <a 
+              href="https://oppussingtrondheim.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Oppussing Trondheim
+            </a>
+            <a 
+              href="https://stavangeroppussing.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Stavanger Oppussing
+            </a>
+            <a 
+              href="https://www.cardly.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Cardly
+            </a>
+            <a 
+              href="https://bergenrenovering.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Bergen Renovering
+            </a>
+            <a 
+              href="https://fasadeplatepris.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Fasadeplatepris
+            </a>
+            <a 
+              href="https://www.bedretilbud.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Bedre Tilbud
+            </a>
+            <a 
+              href="https://www.snakk.ai/no" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Snakk.ai
+            </a>
+            <a 
+              href="https://www.innovena.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Innovena
+            </a>
+          </div>
         </div>
       </div>
     </footer>
