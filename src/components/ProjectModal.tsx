@@ -35,6 +35,7 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     needsFinancing: false
   })
   const [isMounted, setIsMounted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -66,6 +67,9 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
   }
 
   const handleSubmit = async () => {
+    if (isSubmitting) return // Prevent double submission
+    
+    setIsSubmitting(true)
     try {
       // Map budget to numeric value for API
       const budgetMapping: { [key: string]: number } = {
@@ -142,6 +146,8 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     } catch (error) {
       console.error('Network error:', error)
       alert('Det oppstod en nettverksfeil. Vennligst sjekk internettforbindelsen din og prøv igjen.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -465,14 +471,36 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
             ) : (
               <button
                 onClick={handleSubmit}
-                disabled={!isStepValid()}
-                className={`px-8 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer ${
-                  isStepValid()
+                disabled={!isStepValid() || isSubmitting}
+                className={`px-8 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 ${
+                  isStepValid() && !isSubmitting
                     ? 'bg-green-700 text-white hover:bg-green-800'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed transform-none hover:shadow-lg'
                 }`}
               >
-                Send
+                {isSubmitting && (
+                  <svg
+                    className={`animate-spin -ml-1 mr-2 h-5 w-5 ${isStepValid() ? 'text-white' : 'text-gray-500'}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                )}
+                {isSubmitting ? 'Sender..' : 'Send'}
               </button>
             )}
           </div>
