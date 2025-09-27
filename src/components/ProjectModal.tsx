@@ -71,56 +71,34 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     
     setIsSubmitting(true)
     try {
-      // Map budget to numeric value for API
-      const budgetMapping: { [key: string]: number } = {
-        'under-50000': 40000,
-        '50000-100000': 75000,
-        '100000-250000': 175000,
-        '250000-500000': 375000,
-        '500000-1000000': 750000,
-        'over-1000000': 1200000
-      }
-
-      // Parse name into first and last name
-      const nameParts = formData.name.trim().split(' ')
-      const firstName = nameParts[0] || ''
-      const lastName = nameParts.slice(1).join(' ') || ''
-
-      // Prepare lead data for API
-      const leadData = {
-        firstName: firstName,
-        lastName: lastName,
+      // Prepare project data for webhook
+      const projectData = {
+        name: formData.name.trim(),
         email: formData.email.trim(),
         phone: formData.phone.trim(),
-        projectTitle: `${category} prosjekt`,
-        projectDescription: formData.description.trim(),
-        budget: budgetMapping[formData.budget] || 0,
-        currency: 'NOK',
-        priority: 3,
-        referralUrl: window.location.href,
-        customData: {
-          category: category,
-          address: formData.address.trim(),
-          city: formData.city.trim(),
-          postalCode: formData.postalCode.trim(),
-          needsFinancing: formData.needsFinancing,
-          source: 'oppussinghjelpen.no'
-        }
+        category: category,
+        description: formData.description.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        postalCode: formData.postalCode.trim(),
+        budget: formData.budget,
+        needsFinancing: formData.needsFinancing,
+        referralUrl: window.location.href
       }
 
-      // Submit lead to our API route (which then forwards to LeadPortalen)
-      const response = await fetch('/api/submit-lead', {
+      // Submit project to our webhook API route
+      const response = await fetch('/api/submit-project', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(leadData)
+        body: JSON.stringify(projectData)
       })
 
       const result = await response.json()
 
       if (response.ok) {
-        console.log('Lead submitted successfully:', result.leadId)
+        console.log('Project submitted successfully')
         
         // Reset form and close modal
         setFormData({
