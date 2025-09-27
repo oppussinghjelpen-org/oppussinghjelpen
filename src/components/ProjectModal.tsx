@@ -98,7 +98,6 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
       const result = await response.json()
 
       if (response.ok) {
-        console.log('Project submitted successfully')
         
         // Reset form and close modal
         setFormData({
@@ -118,11 +117,9 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
         // Redirect to thank you page
         router.push('/takk')
       } else {
-        console.error('API Error:', result.error)
         alert('Det oppstod en feil ved innsending. Vennligst prøv igjen.')
       }
     } catch (error) {
-      console.error('Network error:', error)
       alert('Det oppstod en nettverksfeil. Vennligst sjekk internettforbindelsen din og prøv igjen.')
     } finally {
       setIsSubmitting(false)

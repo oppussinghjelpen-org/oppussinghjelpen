@@ -36,7 +36,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Send to Make.com webhook
-    const webhookResponse = await fetch('https://hook.eu2.make.com/ignilvr1slyqkujvs9v7wum97ttk4p3n', {
+    const webhookUrl = process.env.WEBHOOK_URL
+    
+    if (!webhookUrl) {
+      console.error('WEBHOOK_URL environment variable is not set')
+      return NextResponse.json(
+        { error: 'Webhook configuration error' },
+        { status: 500 }
+      )
+    }
+
+    const webhookResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
