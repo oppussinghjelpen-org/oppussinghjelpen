@@ -63,32 +63,32 @@ export default function Hero() {
 
   return (
     <>
-      <section className="hero bg-[#f8f8f8] lg:py-[190px] py-[125px]">
+      <section className="hero bg-gradient-to-br from-gray-50 to-green-50 lg:py-[190px] py-[125px]">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-center max-w-[740px] mx-auto text-4xl md:text-5xl font-semibold text-gray-900 mb-0">
             Få 3 tilbud til ditt neste byggeprosjekt
           </h1>
           
-          <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-[15px] gap-3 lg:mt-12 mt-8 max-w-[940px] mx-auto">
+          <div className="grid lg:grid-cols-4 grid-cols-2 lg:gap-[15px] gap-3 lg:mt-12 mt-10 max-w-[940px] mx-auto">
             {categories.map((category) => (
               <button
                 key={category.name}
                 onClick={() => handleCategoryClick(category.name)}
-                className="cursor-pointer text-center hover:scale-105 hover:shadow-md ease-in-out duration-200 bg-white lg:h-[126px] h-[110px] flex flex-col border border-[#eaeaea] items-center justify-center"
+                className="group cursor-pointer text-center hover:scale-105 hover:shadow-lg hover:border-green-300 ease-in-out duration-300 bg-white lg:h-[126px] h-[110px] flex flex-col border-2 border-gray-200 rounded-xl items-center justify-center transition-all"
               >
-                <div className="lg:w-[40px] lg:h-[40px] w-[30px] h-[30px]">
-                  <div className="flex lg:min-h-[40px] min-h-[30px]">
+                <div className="lg:w-[40px] lg:h-[40px] w-[30px] h-[30px] mb-2">
+                  <div className="flex lg:min-h-[40px] min-h-[30px] group-hover:scale-110 transition-transform duration-300">
                     <Image
                       src={category.icon}
                       alt={category.name}
                       width={40}
                       height={40}
-                      className="mx-auto"
+                      className="mx-auto filter group-hover:brightness-110"
                     />
                   </div>
                 </div>
                 
-                <p className="lg:text-[18px] text-[17px] lg:leading-[26px] lg:mt-[10px] mt-[8px] text-gray-900">
+                <p className="lg:text-[18px] text-[16px] font-semibold lg:leading-[26px] text-gray-900 group-hover:text-green-700 transition-colors duration-300">
                   {category.name}
                 </p>
               </button>

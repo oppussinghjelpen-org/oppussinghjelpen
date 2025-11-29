@@ -34,15 +34,24 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
-            <Link href="/kategorier" className="px-6 py-3 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-all duration-200 font-semibold">
-              Kategorier
+            <Link href="/kategorier" className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-green-700 rounded-xl transition-all duration-200 font-semibold">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <span>Kategorier</span>
             </Link>
-            <Link href="/om-oss" className="px-6 py-3 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-all duration-200 font-semibold">
-              Om oss
+            <Link href="/om-oss" className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-green-700 rounded-xl transition-all duration-200 font-semibold">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>Om oss</span>
             </Link>
 
-            <Link href="/kontakt" className="px-6 py-3 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-all duration-200 font-semibold">
-              Kontakt
+            <Link href="/kontakt" className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-green-700 rounded-xl transition-all duration-200 font-semibold">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <span>Kontakt</span>
             </Link>
           </div>
 
@@ -69,24 +78,33 @@ export default function Navbar() {
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100 shadow-xl rounded-b-2xl">
               <Link 
                 href="/kategorier" 
-                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                className="flex items-center space-x-3 px-4 py-4 text-gray-700 hover:text-green-700  rounded-xl transition-colors font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Kategorier
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span>Kategorier</span>
               </Link>
               <Link 
                 href="/om-oss" 
-                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                className="flex items-center space-x-3 px-4 py-4 text-gray-700 hover:text-green-700  rounded-xl transition-colors font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Om oss
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>Om oss</span>
               </Link>
               <Link 
                 href="/kontakt" 
-                className="block px-4 py-4 text-gray-700 hover:text-green-700 hover:bg-green-700/10 rounded-xl transition-colors font-semibold"
+                className="flex items-center space-x-3 px-4 py-4 text-gray-700 hover:text-green-700  rounded-xl transition-colors font-semibold"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Kontakt
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                <span>Kontakt</span>
               </Link>
             </div>
           </div>

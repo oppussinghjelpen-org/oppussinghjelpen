@@ -74,17 +74,6 @@ export default function Footer() {
           <p className="text-gray-400 text-lg mb-2">
             © 2020-{new Date().getFullYear()} Oppussing Hjelpen. Alle rettigheter forbeholdt.
           </p>
-          <p className="text-gray-500">
-            En del av{' '}
-            <a 
-              href="https://www.leadportalen.no/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-green-700 hover:text-green-600 transition-colors font-medium cursor-pointer"
-            >
-              Leadportalen.no
-            </a>
-          </p>
         </div>
 
         {/* Underfooter with partner links */}
@@ -134,14 +123,6 @@ export default function Footer() {
               Stavanger Oppussing
             </a>
             <a 
-              href="https://www.cardly.no/" 
-              target="_blank" 
-              rel="noopener"
-              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
-            >
-              Cardly
-            </a>
-            <a 
               href="https://bergenrenovering.no/" 
               target="_blank" 
               rel="noopener"
@@ -164,22 +145,6 @@ export default function Footer() {
               className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
             >
               Bedre Tilbud
-            </a>
-            <a 
-              href="https://www.snakk.ai/no" 
-              target="_blank" 
-              rel="noopener"
-              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
-            >
-              Snakk.ai
-            </a>
-            <a 
-              href="https://www.innovena.no/" 
-              target="_blank" 
-              rel="noopener"
-              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
-            >
-              Innovena
             </a>
           </div>
         </div>
