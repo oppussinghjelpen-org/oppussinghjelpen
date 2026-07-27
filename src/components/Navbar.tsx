@@ -53,6 +53,14 @@ export default function Navbar() {
               </svg>
               <span>Kontakt</span>
             </Link>
+            <a
+              href="https://bedrift.oppussinghjelpen.no/bli-partner"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 bg-green-700 text-white hover:bg-green-800 rounded-xl transition-all duration-200 font-semibold"
+            >
+              Registrer bedrift
+            </a>
           </div>
 
           {/* Mobile menu button */}
@@ -106,6 +114,15 @@ export default function Navbar() {
                 </svg>
                 <span>Kontakt</span>
               </Link>
+              <a
+                href="https://bedrift.oppussinghjelpen.no/bli-partner"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block mx-4 my-2 px-4 py-4 bg-green-700 text-white hover:bg-green-800 rounded-xl transition-colors font-semibold text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Registrer bedrift
+              </a>
             </div>
           </div>
         )}

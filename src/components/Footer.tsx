@@ -144,7 +144,15 @@ export default function Footer() {
               rel="noopener"
               className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
             >
-              Bedre Tilbud
+              Bedriftslån
+            </a>
+            <a 
+              href="https://xn--rrleggerbasen-bnb.no/" 
+              target="_blank" 
+              rel="noopener"
+              className="text-gray-400 hover:text-green-700 transition-colors text-xs cursor-pointer"
+            >
+              Rørleggerbasen
             </a>
           </div>
         </div>

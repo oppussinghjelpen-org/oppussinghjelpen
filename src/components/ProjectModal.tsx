@@ -3,6 +3,48 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+const CATEGORY_TO_API: Record<string, string> = {
+  'Tak & Fasade': 'annet',
+  'Oppussing': 'totaloppussing',
+  'Renovering': 'totaloppussing',
+  'Garasje': 'tilbygg',
+  'Baderom': 'bad',
+  'Loft & Kjeller': 'totaloppussing',
+  'Nybygg': 'tilbygg',
+  'Annet': 'annet',
+}
+
+const BUDSJETT_OPTIONS = [
+  'Under 100 000',
+  '100–250 000',
+  '250–500 000',
+  '500 000–1 mill',
+  'Over 1 mill',
+  'Usikker',
+]
+
+const TIDSHORISONT_OPTIONS = [
+  'Så snart som mulig',
+  'Innen 1–3 måneder',
+  'Innen 3–6 måneder',
+  'Innen 6–12 måneder',
+  'Bare undersøker muligheter',
+]
+
+const KUNDETYPE_OPTIONS = [
+  'Privat bolig',
+  'Borettslag / sameie',
+  'Næring / bedrift',
+]
+
+const TILBYGG_OPTIONS = [
+  'Garasje',
+  'Terrasse',
+  'Utleieenhet',
+  'Påbygg',
+  'Annet',
+]
+
 interface ProjectModalProps {
   isOpen: boolean
   onClose: () => void
@@ -10,15 +52,17 @@ interface ProjectModalProps {
 }
 
 interface FormData {
-  description: string
-  address: string
-  city: string
-  postalCode: string
   name: string
   email: string
   phone: string
+  description: string
+  address: string
+  postalCode: string
   budget: string
-  needsFinancing: boolean
+  tidshorisont: string
+  kundetype: string
+  kvm: string
+  tilbyggType: string
 }
 
 export default function ProjectModal({ isOpen, onClose, category }: ProjectModalProps) {
@@ -29,14 +73,21 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     phone: '',
     description: '',
     address: '',
-    city: '',
     postalCode: '',
     budget: '',
-    needsFinancing: false
+    tidshorisont: '',
+    kundetype: '',
+    kvm: '',
+    tilbyggType: '',
   })
   const [isMounted, setIsMounted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const router = useRouter()
+
+  const apiKategori = CATEGORY_TO_API[category] || 'annet'
+  const showKvm = ['Baderom', 'Oppussing', 'Renovering', 'Loft & Kjeller'].includes(category)
+  const showTilbyggType = ['Garasje', 'Nybygg'].includes(category)
 
   useEffect(() => {
     setIsMounted(true)
@@ -54,6 +105,20 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     }
   }, [isOpen])
 
+  const resetForm = () => ({
+    name: '',
+    email: '',
+    phone: '',
+    description: '',
+    address: '',
+    postalCode: '',
+    budget: '',
+    tidshorisont: '',
+    kundetype: '',
+    kvm: '',
+    tilbyggType: '',
+  })
+
   const handleNext = () => {
     if (step < 4) {
       setStep(step + 1)
@@ -66,61 +131,64 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
     }
   }
 
+  const buildDetaljer = () => {
+    const detaljer: Record<string, string> = {
+      tjeneste: category,
+    }
+
+    if (formData.kundetype) detaljer.kundetype = formData.kundetype
+    if (formData.kvm.trim()) detaljer.kvm = formData.kvm.trim()
+    if (formData.tilbyggType) detaljer.tilbyggType = formData.tilbyggType
+
+    return detaljer
+  }
+
   const handleSubmit = async () => {
-    if (isSubmitting) return // Prevent double submission
-    
+    if (isSubmitting) return
+
     setIsSubmitting(true)
+    setSubmitError('')
+
     try {
-      // Prepare project data for webhook
-      const projectData = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        category: category,
-        description: formData.description.trim(),
-        address: formData.address.trim(),
-        city: formData.city.trim(),
-        postalCode: formData.postalCode.trim(),
-        budget: formData.budget,
-        needsFinancing: formData.needsFinancing,
-        referralUrl: window.location.href
+      const payload: Record<string, unknown> = {
+        site: 'oppussinghjelpen',
+        kategori: apiKategori,
+        postnr: formData.postalCode.replace(/\D/g, ''),
+        navn: formData.name.trim(),
+        mobil: formData.phone.replace(/\D/g, '').replace(/^47/, ''),
+        epost: formData.email.trim(),
+        budsjett: formData.budget,
+        tidshorisont: formData.tidshorisont,
+        beskrivelse: formData.description.trim(),
+        detaljer: buildDetaljer(),
       }
 
-      // Submit project to our webhook API route
-      const response = await fetch('/api/submit-project', {
+      if (formData.address.trim()) {
+        payload.adresse = formData.address.trim()
+      }
+
+      const response = await fetch('https://bedrift.oppussinghjelpen.no/api/lead', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(projectData)
+        body: JSON.stringify(payload),
       })
 
       const result = await response.json()
 
       if (response.ok) {
-        
-        // Reset form and close modal
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          description: '',
-          address: '',
-          city: '',
-          postalCode: '',
-          budget: '',
-          needsFinancing: false
-        })
+        setFormData(resetForm())
         setStep(1)
         onClose()
-        
-        // Redirect to thank you page
         router.push('/takk')
+      } else if (response.status === 409) {
+        setSubmitError(result.error || 'Vi har allerede mottatt en henvendelse fra deg.')
       } else {
-        alert('Det oppstod en feil ved innsending. Vennligst prøv igjen.')
+        setSubmitError(result.error || 'Det oppstod en feil ved innsending. Vennligst prøv igjen.')
       }
-    } catch (error) {
-      alert('Det oppstod en nettverksfeil. Vennligst sjekk internettforbindelsen din og prøv igjen.')
+    } catch {
+      setSubmitError('Det oppstod en nettverksfeil. Vennligst sjekk internettforbindelsen din og prøv igjen.')
     } finally {
       setIsSubmitting(false)
     }
@@ -128,24 +196,15 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
 
   const handleClose = () => {
     setStep(1)
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      description: '',
-      address: '',
-      city: '',
-      postalCode: '',
-      budget: '',
-      needsFinancing: false
-    })
+    setFormData(resetForm())
+    setSubmitError('')
     onClose()
   }
 
-  const updateFormData = (field: keyof FormData, value: string | boolean) => {
+  const updateFormData = (field: keyof FormData, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -155,66 +214,44 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
   }
 
   const validatePhone = (phone: string) => {
-    // Remove all non-digit characters
     const cleanPhone = phone.replace(/\D/g, '')
-    
-    // Check if it starts with country code +47 and remove it
-    const normalizedPhone = cleanPhone.startsWith('47') && cleanPhone.length > 8 
-      ? cleanPhone.substring(2) 
+    const normalizedPhone = cleanPhone.startsWith('47') && cleanPhone.length > 8
+      ? cleanPhone.substring(2)
       : cleanPhone
-    
-    // Must be exactly 8 digits
-    if (normalizedPhone.length !== 8) {
-      return false
-    }
-    
-    // Must start with 9 or 4
-    if (!normalizedPhone.startsWith('9') && !normalizedPhone.startsWith('4')) {
-      return false
-    }
-    
-    // Check if all digits are the same (not allowed)
-    const firstDigit = normalizedPhone[0]
-    if (normalizedPhone.split('').every(digit => digit === firstDigit)) {
-      return false
-    }
-    
-    return true
+
+    return normalizedPhone.length === 8
   }
 
   const validatePostalCode = (postalCode: string) => {
-    // Norwegian postal codes are 4 digits
-    const cleanCode = postalCode.replace(/\D/g, '')
-    return cleanCode.length === 4
+    return postalCode.replace(/\D/g, '').length === 4
   }
 
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return formData.name.trim().length >= 2 && 
-               validateEmail(formData.email.trim()) && 
+        return formData.name.trim().length >= 2 &&
+               validateEmail(formData.email.trim()) &&
                validatePhone(formData.phone.trim())
       case 2:
-        return formData.description.trim().length >= 10
+        return formData.description.trim().length >= 10 &&
+               formData.tidshorisont.length > 0 &&
+               formData.kundetype.length > 0 &&
+               (!showTilbyggType || formData.tilbyggType.length > 0)
       case 3:
-        return formData.address.trim().length >= 5 && 
-               formData.city.trim().length >= 2 && 
-               validatePostalCode(formData.postalCode.trim())
+        return validatePostalCode(formData.postalCode.trim())
       case 4:
-        return formData.budget.trim().length > 0
+        return formData.budget.length > 0
       default:
         return false
     }
   }
 
   if (!isMounted) return null
-
   if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-slate-500/50 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl max-w-md md:max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
@@ -232,15 +269,14 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
               </svg>
             </button>
           </div>
-          
-          {/* Progress bar */}
+
           <div className="mt-6">
             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
               <span>Steg {step} av 4</span>
               <span>{Math.round((step / 4) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-green-700 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${(step / 4) * 100}%` }}
               ></div>
@@ -248,8 +284,13 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
           </div>
         </div>
 
-        {/* Content */}
         <div className="p-6">
+          {submitError && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+              {submitError}
+            </div>
+          )}
+
           {step === 1 && (
             <div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Kontaktinfo</h3>
@@ -261,7 +302,7 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
                   type="text"
                   value={formData.name}
                   onChange={(e) => updateFormData('name', e.target.value)}
-                  placeholder="Fullt navn (minimum 2 tegn)"
+                  placeholder="Fullt navn"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
                     formData.name.length > 0 && formData.name.length < 2 ? 'border-red-300' : 'border-gray-300'
                   }`}
@@ -271,7 +312,7 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
                 {formData.name.length > 0 && formData.name.length < 2 && (
                   <p className="text-red-500 text-sm -mt-2">Minimum 2 tegn kreves</p>
                 )}
-                
+
                 <input
                   type="email"
                   value={formData.email}
@@ -285,19 +326,19 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
                 {formData.email.length > 0 && !validateEmail(formData.email) && (
                   <p className="text-red-500 text-sm -mt-2">Ugyldig e-postadresse</p>
                 )}
-                
+
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => updateFormData('phone', e.target.value)}
-                  placeholder="Telefonnummer (f.eks. 912 34 567 eller 412 34 567)"
+                  placeholder="Mobilnummer (8 siffer)"
                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
                     formData.phone.length > 0 && !validatePhone(formData.phone) ? 'border-red-300' : 'border-gray-300'
                   }`}
                   required
                 />
                 {formData.phone.length > 0 && !validatePhone(formData.phone) && (
-                  <p className="text-red-500 text-sm -mt-2">Telefonnummer må starte med 9 eller 4, ha 8 siffer, og kan ikke være like siffer</p>
+                  <p className="text-red-500 text-sm -mt-2">Mobilnummer må ha 8 siffer</p>
                 )}
               </div>
             </div>
@@ -305,77 +346,138 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
 
           {step === 2 && (
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Beskriv prosjektet</h3>
-              <p className="text-gray-600 mb-4">
-                Fortell oss litt om hva du ønsker å gjøre. Jo mer detaljert, desto bedre tilbud kan vi gi deg. <span className="text-red-500">*</span>
-              </p>
-              <textarea
-                value={formData.description}
-                onChange={(e) => updateFormData('description', e.target.value)}
-                placeholder="Beskriv ditt prosjekt... (minimum 10 tegn)"
-                className="w-full h-32 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent resize-none text-gray-900"
-                rows={4}
-                required
-                minLength={10}
-              />
-              {formData.description.length > 0 && formData.description.length < 10 && (
-                <p className="text-red-500 text-sm mt-2">Minimum 10 tegn kreves</p>
-              )}
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Om prosjektet</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Beskriv prosjektet <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => updateFormData('description', e.target.value)}
+                    placeholder="Fortell oss hva du ønsker å få gjort..."
+                    className="w-full h-28 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent resize-none text-gray-900"
+                    rows={4}
+                    required
+                    minLength={10}
+                  />
+                  {formData.description.length > 0 && formData.description.length < 10 && (
+                    <p className="text-red-500 text-sm mt-1">Minimum 10 tegn kreves</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Når ønsker du å starte? <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.tidshorisont}
+                    onChange={(e) => updateFormData('tidshorisont', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 cursor-pointer"
+                    required
+                  >
+                    <option value="">Velg tidshorisont</option>
+                    {TIDSHORISONT_OPTIONS.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Type bolig <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.kundetype}
+                    onChange={(e) => updateFormData('kundetype', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 cursor-pointer"
+                    required
+                  >
+                    <option value="">Velg type</option>
+                    {KUNDETYPE_OPTIONS.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {showKvm && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ca. størrelse (kvm)
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.kvm}
+                      onChange={(e) => updateFormData('kvm', e.target.value)}
+                      placeholder="F.eks. 6"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900"
+                    />
+                  </div>
+                )}
+
+                {showTilbyggType && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Type tilbygg <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={formData.tilbyggType}
+                      onChange={(e) => updateFormData('tilbyggType', e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 cursor-pointer"
+                      required
+                    >
+                      <option value="">Velg type</option>
+                      {TILBYGG_OPTIONS.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {step === 3 && (
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Adresse</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Lokasjon</h3>
               <p className="text-gray-600 mb-4">
-                Hvor skal arbeidet utføres? <span className="text-red-500">*</span>
+                Hvor skal arbeidet utføres?
               </p>
-                             <div className="space-y-4">
-                 <input
-                   type="text"
-                   value={formData.address}
-                   onChange={(e) => updateFormData('address', e.target.value)}
-                   placeholder="Gateadresse (f.eks. Storgata 15)"
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
-                     formData.address.length > 0 && formData.address.length < 5 ? 'border-red-300' : 'border-gray-300'
-                   }`}
-                   required
-                   minLength={5}
-                 />
-                 {formData.address.length > 0 && formData.address.length < 5 && (
-                   <p className="text-red-500 text-sm -mt-2">Minimum 5 tegn kreves</p>
-                 )}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Postnummer <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.postalCode}
+                    onChange={(e) => updateFormData('postalCode', e.target.value)}
+                    placeholder="0000"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
+                      formData.postalCode.length > 0 && !validatePostalCode(formData.postalCode) ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    required
+                    maxLength={4}
+                  />
+                  {formData.postalCode.length > 0 && !validatePostalCode(formData.postalCode) && (
+                    <p className="text-red-500 text-sm mt-1">Postnummer må ha 4 siffer</p>
+                  )}
+                </div>
 
-                 <input
-                   type="text"
-                   value={formData.postalCode}
-                   onChange={(e) => updateFormData('postalCode', e.target.value)}
-                   placeholder="Postnummer (4 siffer)"
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
-                     formData.postalCode.length > 0 && !validatePostalCode(formData.postalCode) ? 'border-red-300' : 'border-gray-300'
-                   }`}
-                   required
-                   maxLength={4}
-                 />
-                 {formData.postalCode.length > 0 && !validatePostalCode(formData.postalCode) && (
-                   <p className="text-red-500 text-sm -mt-2">4 siffer kreves</p>
-                 )}
-                 
-                 <input
-                   type="text"
-                   value={formData.city}
-                   onChange={(e) => updateFormData('city', e.target.value)}
-                   placeholder="Sted (f.eks. Oslo)"
-                   className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 ${
-                     formData.city.length > 0 && formData.city.length < 2 ? 'border-red-300' : 'border-gray-300'
-                   }`}
-                   required
-                   minLength={2}
-                 />
-                 {formData.city.length > 0 && formData.city.length < 2 && (
-                   <p className="text-red-500 text-sm -mt-2">Minimum 2 tegn kreves</p>
-                 )}
-               </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gateadresse (valgfritt)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.address}
+                    onChange={(e) => updateFormData('address', e.target.value)}
+                    placeholder="F.eks. Storgata 15"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">Adressen deles kun med entreprenører som kjøper oppdraget ditt</p>
+                </div>
+              </div>
             </div>
           )}
 
@@ -385,39 +487,26 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
               <p className="text-gray-600 mb-4">
                 Hva er ditt omtrentlige budsjett for prosjektet? <span className="text-red-500">*</span>
               </p>
+              {(apiKategori === 'bad' || apiKategori === 'totaloppussing') && (
+                <p className="text-sm text-gray-500 mb-4">
+                  Budsjettet hjelper oss å matche deg med riktige entreprenører.
+                </p>
+              )}
               <select
                 value={formData.budget}
                 onChange={(e) => updateFormData('budget', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 cursor-pointer mb-6"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-700 focus:border-transparent text-gray-900 cursor-pointer"
                 required
               >
                 <option value="">Velg budsjettramme</option>
-                <option value="under-50000">Under 50 000 kr</option>
-                <option value="50000-100000">50 000 - 100 000 kr</option>
-                <option value="100000-250000">100 000 - 250 000 kr</option>
-                <option value="250000-500000">250 000 - 500 000 kr</option>
-                <option value="500000-1000000">500 000 - 1 000 000 kr</option>
-                <option value="over-1000000">Over 1 000 000 kr</option>
+                {BUDSJETT_OPTIONS.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
               </select>
-              
-              {/* Financing checkbox */}
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="financing"
-                  checked={formData.needsFinancing}
-                  onChange={(e) => updateFormData('needsFinancing', e.target.checked)}
-                  className="w-5 h-5 text-green-700 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
-                />
-                <label htmlFor="financing" className="ml-3 text-gray-900 font-medium cursor-pointer">
-                  Jeg ønsker tilbud på finansiering
-                </label>
-              </div>
             </div>
           )}
         </div>
 
-        {/* Footer */}
         <div className="p-6 border-t border-gray-100">
           <div className="flex items-center justify-between">
             {step > 1 && (
@@ -428,9 +517,9 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
                 Tilbake
               </button>
             )}
-            
+
             <div className="flex-1"></div>
-            
+
             {step < 4 ? (
               <button
                 onClick={handleNext}
