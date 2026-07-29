@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { sporHendelse } from '@/lib/pixel'
 
 const CATEGORY_TO_API: Record<string, string> = {
   'Tak & Fasade': 'annet',
@@ -178,6 +179,8 @@ export default function ProjectModal({ isOpen, onClose, category }: ProjectModal
       const result = await response.json()
 
       if (response.ok) {
+        // Konverteringen kundekampanjen på Meta optimaliserer mot
+        sporHendelse('Lead', { content_category: apiKategori })
         setFormData(resetForm())
         setStep(1)
         onClose()
