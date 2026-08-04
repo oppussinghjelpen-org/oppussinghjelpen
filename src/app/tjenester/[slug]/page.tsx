@@ -3106,6 +3106,36 @@ export default async function CategoryPage({ params }: PageProps) {
         </div>
       </section>
 
+      {/* Finansiering — kun kategorier med store budsjetter */}
+      {['baderom', 'tak-og-fasade', 'renovering', 'nybygg', 'loft-og-kjeller', 'oppussing'].includes(slug) && (
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              Hvordan finansierer folk {category.title.toLowerCase()}?
+            </h2>
+            <p className="text-lg text-gray-700 leading-relaxed mb-4">
+              De fleste større prosjekter finansieres med en kombinasjon av oppsparte midler og lån. Har du
+              god sikkerhet i boligen, er utvidelse av boliglånet som regel den billigste veien — renten er
+              lavest, men prosessen tar litt tid. Skal du bare dekke en mindre del av jobben, eller mangler
+              du sikkerhet, bruker mange i stedet et forbrukslån uten sikkerhet. Renten settes individuelt,
+              så det lønner seg å{' '}
+              <a href="https://www.bedretilbud.no/forbrukslan" className="text-green-700 font-semibold underline">
+                sammenligne forbrukslån fra flere banker
+              </a>{' '}
+              før du velger — forskjellen mellom tilbudene kan utgjøre mange tusenlapper over lånets levetid.
+            </p>
+            <p className="text-lg text-gray-700 leading-relaxed">
+              Ett råd uansett finansiering: sett opp totalbudsjettet før du henter inn tilbud, og legg inn en
+              buffer på 10–15 prosent til uforutsette funn. Og sammenlign alltid lån på{' '}
+              <a href="https://www.bedretilbud.no/effektiv-rente" className="text-green-700 font-semibold underline">
+                effektiv rente
+              </a>
+              , ikke nominell — det er den som viser hva lånet faktisk koster med alle gebyrer.
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* Final CTA Section */}
       <section className="py-20 bg-green-700 text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
